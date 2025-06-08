@@ -20,7 +20,7 @@ export const SUBSCRIPTION_PLANS: readonly Plan[] = [
       'Email support',
       'Basic analytics',
     ],
-    razorpayPlanId: 'plan_basic',
+    razorpayPlanId: 'plan_QelayT2YL9IRTC',
   },
   {
     id: 'pro',
@@ -34,7 +34,7 @@ export const SUBSCRIPTION_PLANS: readonly Plan[] = [
       'Advanced analytics',
       'Competitor analysis',
     ],
-    razorpayPlanId: 'plan_pro',
+    razorpayPlanId: 'plan_QelbOfkPmDVu7G',
     isPopular: true,
   },
   {
@@ -50,7 +50,7 @@ export const SUBSCRIPTION_PLANS: readonly Plan[] = [
       'API access',
       'Custom integrations',
     ],
-    razorpayPlanId: 'plan_enterprise',
+    razorpayPlanId: 'plan_QelbvZHw4rYs8N',
   },
 ] as const;
 
