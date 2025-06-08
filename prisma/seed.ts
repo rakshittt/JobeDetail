@@ -13,7 +13,7 @@ async function main() {
         name: plan.name,
         price: plan.price,
         interval: plan.interval,
-        features: plan.features,
+        features: [...plan.features],
         // You'll need to create these plans in Razorpay dashboard first
         razorpayPlanId: `plan_${plan.id}`, // Replace with actual Razorpay plan IDs
       },

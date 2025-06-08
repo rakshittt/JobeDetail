@@ -8,7 +8,7 @@ import { SessionProvider } from "next-auth/react";
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <ThemeProvider theme={theme}>
-      <GlobalStyle />
+      <GlobalStyle theme={theme} />
       <SessionProvider>
         {children}
       </SessionProvider>

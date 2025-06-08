@@ -1,9 +1,10 @@
 import { prisma } from "./prisma";
+import { Prisma } from "@prisma/client";
 
-export async function isUserSubscribed(email: string) {
+export async function isSubscribed(userId: string) {
   const user = await prisma.user.findUnique({
-    where: { email },
+    where: { id: userId },
     include: { subscription: true },
   });
-  return user?.subscription?.status === "active";
+  return user?.subscription?.status === "ACTIVE";
 }

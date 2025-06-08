@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { razorpayInstance } from '@/lib/razorpay';
 import { prisma } from '@/lib/prisma';
-import { getServerSession } from 'next-auth';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from "@/app/api/auth/[...nextauth]/auth";
 
 export async function POST(req: NextRequest) {
   try {

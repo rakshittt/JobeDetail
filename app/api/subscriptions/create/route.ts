@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { razorpayInstance } from '@/lib/razorpay';
 import { prisma } from '@/lib/prisma';
-import { getServerSession } from 'next-auth';
+import { getServerSession } from 'next-auth/next';
 import { authOptions } from "@/app/api/auth/[...nextauth]/auth";
 
 export async function POST(req: NextRequest) {
@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
     // Create Razorpay subscription
     const subscription = await razorpayInstance.subscriptions.create({
       plan_id: plan.razorpayPlanId!,
-      customer_id: customer.id,
+      customer_notify: 1,
       quantity: 1,
       total_count: 12, // 12 months
       start_at: Math.floor(Date.now() / 1000) + 24 * 60 * 60, // Start tomorrow
