@@ -17,18 +17,26 @@ export default function AuthForm({ mode }: AuthFormProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    
     if (mode === "register") {
-      // Call registration API
-      const res = await fetch("/api/auth/register", {
-        method: "POST",
-        body: JSON.stringify({ email, password, name }),
-        headers: { "Content-Type": "application/json" },
-      });
-      if (res.ok) {
-        await signIn("credentials", { email, password, redirect: false });
-        router.push("/dashboard");
-      } else {
-        setError("Registration failed.");
+      try {
+        // Call registration API
+        const res = await fetch("/api/auth/register", {
+          method: "POST",
+          body: JSON.stringify({ email, password, name }),
+          headers: { "Content-Type": "application/json" },
+        });
+        
+        const data = await res.json();
+        
+        if (res.ok) {
+          await signIn("credentials", { email, password, redirect: false });
+          router.push("/dashboard");
+        } else {
+          setError(data.error || "Registration failed.");
+        }
+      } catch (err) {
+        setError("An unexpected error occurred. Please try again.");
       }
     } else {
       // Login
@@ -62,11 +70,12 @@ export default function AuthForm({ mode }: AuthFormProps) {
         placeholder="Password"
         value={password}
         onChange={e => setPassword(e.target.value)}
+        minLength={8}
       />
       <button type="submit" style={{ background: "#FF5A5F", color: "#fff", border: "none", padding: "0.75rem", borderRadius: "5px", fontWeight: "bold" }}>
         {mode === "login" ? "Login" : "Sign Up"}
       </button>
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {error && <p style={{ color: "red", textAlign: "center" }}>{error}</p>}
     </form>
   );
 }
