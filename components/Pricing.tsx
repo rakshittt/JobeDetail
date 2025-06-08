@@ -17,32 +17,39 @@ export default function Pricing() {
 
   const handleSubscribe = async (planId: string) => {
     setLoading(planId);
+    console.log('Subscribing to plan:', planId);
     
     try {
-      // Create order
-      const orderResponse = await fetch('/api/payments/create-order', {
+      // Create subscription
+      const response = await fetch('/api/razorpay/create-subscription', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ planId }),
       });
 
-      const orderData = await orderResponse.json();
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('Subscription error:', errorData);
+        throw new Error(errorData.error || 'Failed to create subscription');
+      }
 
+      const data = await response.json();
+      console.log('Subscription created:', data);
+
+      // Initialize Razorpay
       const options = {
-        key: orderData.key,
-        amount: orderData.amount,
-        currency: orderData.currency,
-        order_id: orderData.orderId,
-        name: 'Your SaaS App',
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+        subscription_id: data.subscriptionId,
+        name: 'Company Research',
         description: 'Subscription Payment',
         handler: async function (response: any) {
           try {
-            const verifyResponse = await fetch('/api/payments/verify', {
+            const verifyResponse = await fetch('/api/razorpay/verify', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
                 ...response,
-                planId,
+                subscriptionId: data.subscriptionId,
               }),
             });
 
@@ -125,11 +132,11 @@ export default function Pricing() {
 
                 <Button
                   className="w-full"
-                  onClick={() => handleSubscribe(plan.id)}
-                  disabled={loading === plan.id}
+                  onClick={() => handleSubscribe(plan.razorpayPlanId)}
+                  disabled={loading === plan.razorpayPlanId}
                   variant={plan.isPopular ? 'default' : 'outline'}
                 >
-                  {loading === plan.id ? 'Processing...' : 'Subscribe Now'}
+                  {loading === plan.razorpayPlanId ? 'Processing...' : 'Subscribe Now'}
                 </Button>
               </CardContent>
             </Card>

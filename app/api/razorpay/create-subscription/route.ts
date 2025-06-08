@@ -20,13 +20,16 @@ export async function POST(req: Request) {
     }
 
     const { planId } = await req.json();
+    console.log('Received planId:', planId); // Debug log
 
     // Get plan details from database
     const plan = await prisma.plan.findUnique({
       where: { razorpayPlanId: planId },
     });
+    console.log('Found plan:', plan); // Debug log
 
     if (!plan || !plan.razorpayPlanId) {
+      console.log('Plan not found or invalid'); // Debug log
       return NextResponse.json(
         { error: 'Invalid plan' },
         { status: 400 }

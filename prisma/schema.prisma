@@ -57,6 +57,7 @@ model Subscription {
   updatedAt              DateTime           @updatedAt
   razorpaySubscriptionId String?            @unique
   razorpayCustomerId     String?
+  razorpayPaymentId      String?
   plan                   Plan               @relation(fields: [planId], references: [id])
   user                   User               @relation(fields: [userId], references: [id], onDelete: Cascade)
 
