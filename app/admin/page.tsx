@@ -7,14 +7,14 @@ export default function AdminPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
 
-  useEffect(() => {
-    // Replace with your admin check logic
-    if (status === "authenticated" && session.user.role !== "admin") {
-      router.push("/");
-    }
-  }, [status, session, router]);
+  // useEffect(() => {
+  //   // Replace with your admin check logic
+  //   if (status === "authenticated" && session.user.role !== "admin") {
+  //     router.push("/");
+  //   }
+  // }, [status, session, router]);
 
-  if (status === "loading") return <p>Loading...</p>;
+  // if (status === "loading") return <p>Loading...</p>;
 
   return (
     <main style={{ padding: "2rem" }}>
