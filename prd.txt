@@ -1,0 +1,62 @@
+Product Requirements Document (PRD) :
+
+Product Name: JobeDetail
+
+Problem Statement:
+    Job seekers and career coaches waste significant time researching companies before interviews. They need a fast, reliable way to get company summaries, culture, funding, Glassdoor insights, and tailored interview questions from a single source.
+
+Target Users: 
+    Job seekers (active and passive)
+    Career coaches
+
+Core Features:
+    Paste job link or enter company name to fetch:
+        Company summary (industry, size, HQ, etc.)
+        Culture insights
+        Funding history
+        Glassdoor ratings and reviews
+        Recent news
+    Suggest custom questions to ask in interviews
+    User authentication (sign up, login, password reset)
+    Payment integration (subscription-based access)
+    Dashboard to view previous searches and saved companies
+    Responsive, modern UI (Airbnb-style design system)
+    Admin panel for user management and analytics
+
+Non-Functional Requirements:
+    Fast response times (<2s per query)
+    Secure authentication and payment
+    Scalable to 10,000+ users
+    GDPR compliant
+
+Success Metrics:
+    Time saved per job application
+    User retention & satisfaction
+    Conversion to paid plans
+
+Tech Stack : 
+
+    Frontend: Next.js v15 (React-based, SSR/SSG support)
+    Backend: Next.js API routes (serverless functions)
+    Database: Neon DB (Postgres-compatible, serverless)
+    Authentication: NextAuth.js
+    Payments: Stripe
+    Design System: Airbnb-inspired (using styled-components or Tailwind with Airbnb design tokens)
+    Deployment: Vercel (recommended for Next.js)
+    Other: OpenAI API (for summarization, custom questions), Glassdoor/Crunchbase APIs (for company data), News API
+
+Architecture Overview : 
+[User] 
+   |
+   v
+[Next.js Frontend (Airbnb style)] 
+   |
+   v
+[Next.js API Routes]
+   |
+   v
+[Neon DB] <-> [External APIs (OpenAI, Glassdoor, Crunchbase, News, Stripe)]
+
+Authentication and payment handled via NextAuth.js and Stripe.
+Company data fetched via external APIs, summarized and enhanced via OpenAI.
+User data, searches, and subscriptions stored in Neon DB.

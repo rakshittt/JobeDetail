@@ -1,0 +1,114 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String?
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  searches  Search[]
+  subscription Subscription?
+  savedCompanies SavedCompany[]
+
+  @@map("users")
+}
+
+model Plan {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  price       Int      // Price in paise (INR)
+  interval    String   // "monthly" or "yearly"
+  features    String[] // Array of features
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Razorpay plan ID
+  razorpayPlanId String? @unique
+  
+  subscriptions Subscription[]
+  
+  @@map("plans")
+}
+
+model Search {
+  id        String   @id @default(uuid())
+  userId    String
+  company   String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model Subscription {
+  id                    String            @id @default(cuid())
+  userId                String            @unique
+  planId                String
+  status                SubscriptionStatus
+  currentPeriodStart    DateTime
+  currentPeriodEnd      DateTime
+  cancelAtPeriodEnd     Boolean           @default(false)
+  createdAt             DateTime          @default(now())
+  updatedAt             DateTime          @updatedAt
+  
+  // Razorpay subscription ID
+  razorpaySubscriptionId String?          @unique
+  razorpayCustomerId    String?
+  
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan Plan @relation(fields: [planId], references: [id])
+  
+  @@map("subscriptions")
+}
+
+model SavedCompany {
+  id        String   @id @default(uuid())
+  userId    String
+  company   String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model Payment {
+  id                    String        @id @default(cuid())
+  userId                String
+  subscriptionId        String?
+  amount                Int           // Amount in paise
+  currency              String        @default("INR")
+  status                PaymentStatus
+  razorpayPaymentId     String?       @unique
+  razorpayOrderId       String?
+  razorpaySignature     String?
+  createdAt             DateTime      @default(now())
+  updatedAt             DateTime      @updatedAt
+  
+  @@map("payments")
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  INACTIVE
+  CANCELLED
+  PAST_DUE
+  TRIALING
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
