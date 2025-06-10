@@ -11,25 +11,30 @@ const razorpay = new Razorpay({
 
 export async function POST(req: Request) {
   try {
+    console.log('Starting subscription creation process...');
+    
     const session = await getServerSession(authOptions);
     if (!session?.user) {
+      console.log('No session found');
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
       );
     }
+    console.log('User authenticated:', session.user.id);
 
     const { planId } = await req.json();
-    console.log('Received planId:', planId); // Debug log
+    console.log('Received planId:', planId);
 
     // Get plan details from database
+    console.log('Fetching plan from database...');
     const plan = await prisma.plan.findUnique({
       where: { razorpayPlanId: planId },
     });
-    console.log('Found plan:', plan); // Debug log
+    console.log('Found plan:', plan);
 
     if (!plan || !plan.razorpayPlanId) {
-      console.log('Plan not found or invalid'); // Debug log
+      console.log('Plan not found or invalid');
       return NextResponse.json(
         { error: 'Invalid plan' },
         { status: 400 }
@@ -37,6 +42,7 @@ export async function POST(req: Request) {
     }
 
     // Create Razorpay subscription
+    console.log('Creating Razorpay subscription...');
     const subscription = await razorpay.subscriptions.create({
       plan_id: plan.razorpayPlanId,
       customer_notify: 1,
@@ -46,24 +52,43 @@ export async function POST(req: Request) {
         planId: plan.id,
       },
     });
+    console.log('Razorpay subscription created:', subscription);
 
-    // Create subscription record in database
-    await prisma.subscription.create({
-      data: {
+    // Create subscription in database
+    console.log('Creating subscription in database...');
+    const subscriptionRecord = await prisma.subscription.upsert({
+      where: {
         userId: session.user.id,
+      },
+      update: {
         planId: plan.id,
-        status: 'TRIALING',
+        status: 'ACTIVE',
         currentPeriodStart: new Date(),
         currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
+        cancelAtPeriodEnd: false,
+        razorpaySubscriptionId: subscription.id,
+      },
+      create: {
+        userId: session.user.id,
+        planId: plan.id,
+        status: 'ACTIVE',
+        currentPeriodStart: new Date(),
+        currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
+        cancelAtPeriodEnd: false,
         razorpaySubscriptionId: subscription.id,
       },
     });
+    console.log('Database subscription created:', subscriptionRecord);
 
-    return NextResponse.json({
-      subscriptionId: subscription.id,
-    });
+    return NextResponse.json({ subscriptionId: subscription.id });
   } catch (error) {
     console.error('Subscription creation error:', error);
+    if (error instanceof Error) {
+      console.error('Error details:', {
+        message: error.message,
+        stack: error.stack,
+      });
+    }
     return NextResponse.json(
       { error: 'Failed to create subscription' },
       { status: 500 }
