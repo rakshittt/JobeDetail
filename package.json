@@ -12,7 +12,8 @@
     "test:db": "ts-node --project scripts/tsconfig.json scripts/test-db.ts",
     "prisma:generate": "prisma generate",
     "prisma:generate:prod": "prisma generate --no-engine",
-    "test-db": "ts-node --project scripts/tsconfig.json scripts/test-db.ts"
+    "test-db": "ts-node --project scripts/tsconfig.json scripts/test-db.ts",
+    "test:razorpay": "tsx scripts/test-razorpay.ts"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.9.1",

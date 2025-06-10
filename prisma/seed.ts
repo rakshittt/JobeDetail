@@ -4,7 +4,9 @@ import { SUBSCRIPTION_PLANS } from '../lib/plan';
 const prisma = new PrismaClient();
 
 async function main() {
-  // Create plans
+  console.log('Seeding database...');
+
+  // Seed subscription plans
   for (const plan of SUBSCRIPTION_PLANS) {
     await prisma.plan.upsert({
       where: { razorpayPlanId: plan.razorpayPlanId },
@@ -24,12 +26,12 @@ async function main() {
     });
   }
 
-  console.log('✅ Plans seeded successfully');
+  console.log('Database seeded successfully!');
 }
 
 main()
   .catch((e) => {
-    console.error('❌ Error seeding database:', e);
+    console.error('Error seeding database:', e);
     process.exit(1);
   })
   .finally(async () => {

@@ -17,7 +17,13 @@ export default function Pricing() {
 
   const handleSubscribe = async (planId: string) => {
     setLoading(planId);
-    console.log('Subscribing to plan:', planId);
+    console.log('Plan being subscribed to:', {
+      planId,
+      allPlans: SUBSCRIPTION_PLANS.map(p => ({
+        id: p.id,
+        razorpayPlanId: p.razorpayPlanId
+      }))
+    });
     
     try {
       // Create subscription
